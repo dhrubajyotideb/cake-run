@@ -1,314 +1,113 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#170e21">
-  <title>Happy Birthday Bhutki! | Cake Run</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --ink: #170e21;
-      --cream: #fff6e2;
-      --gold: #ffda89;
-      --pink: #ff9dbb;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#170e21">
+<title>Happy Birthday Bhutki! | Cake Run</title>
+<style>
+:root{color-scheme:dark;--ink:#170e21;--cream:#fff6e2;--gold:#ffda89;--pink:#ff9dbb}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;min-height:100svh;display:grid;place-items:center;padding:12px;background:radial-gradient(ellipse at 50% 0,#50304e,var(--ink) 65%);color:var(--cream);font:500 15px/1.4 system-ui,sans-serif}
+main{width:min(100%,530px)}
+header,.hud,.controls,.actions{display:flex;align-items:center;gap:8px}
+header{justify-content:space-between;margin-bottom:8px}
+.brand{letter-spacing:.16em;font-size:.78rem;font-weight:900}
+button{font:inherit;font-weight:800;border:0;border-radius:999px;background:var(--gold);color:#27152d;padding:9px 15px;min-height:42px;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:3px solid white;outline-offset:3px}
+.secondary{background:#ffffff16;color:var(--cream);border:1px solid #ffffff30}
+.stage{position:relative;overflow:hidden;isolation:isolate;border:1px solid #ffffff30;border-radius:26px;background:#271b38;box-shadow:0 20px 70px #0d0617aa}
+canvas{display:block;width:100%;height:min(70svh,680px);touch-action:none}
+.hud{position:absolute;inset:12px 12px auto;justify-content:space-between;pointer-events:none;z-index:1}
+.slots{display:flex;gap:5px}
+.slot,.stats{background:#21152bed;border:1px solid #ffffff40;border-radius:9px}
+.slot{display:grid;place-items:center;width:30px;height:34px;color:#e5c9e8;font-weight:900}
+.slot.filled{background:var(--gold);color:#281731;animation:pop .26s ease-out}
+@keyframes pop{50%{transform:scale(1.2)}}
+.stats{padding:5px 8px;text-align:right;font-size:.8rem}
+#hearts{color:var(--pink);letter-spacing:.1em}
+#cue{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);margin:0;padding:5px 12px;border-radius:999px;background:#21152bee;color:var(--gold);text-align:center;width:max-content;max-width:95%;pointer-events:none}
+.card{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.8svh,16px);padding:12px;text-align:center;background:radial-gradient(ellipse at top,#7d416a,#2b1a3a 70%,#21152b)}
+.card.dim{background:#20132bed}
+h1,p{margin:0}
+h1{font:800 clamp(2rem,8vw,4rem)/.94 Georgia,serif;letter-spacing:-.045em;text-wrap:balance}
+.card p{max-width:32ch;color:#f4dae9}
+.portrait{width:clamp(45px,13svh,104px);aspect-ratio:1;object-fit:cover;object-position:center 24%;border-radius:50%;border:3px solid var(--gold);transform:rotate(-8deg)}
+.icon{font-size:clamp(29px,7svh,62px);line-height:1}
+.controls{justify-content:center;margin-top:9px}
+.controls button{min-width:52px}
+.controls .jump{min-width:110px}
+#confetti{position:absolute;inset:0;pointer-events:none;z-index:3}
+#confetti i{position:absolute;top:-15px;width:8px;height:14px;animation:fall 2s ease-in both}
+@keyframes fall{to{transform:translateY(75vh) rotate(770deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important}}
 
-    * { box-sizing: border-box; }
-    [hidden] { display: none !important; }
-
-    body {
-      margin: 0;
-      min-height: 100svh;
-      display: grid;
-      place-items: center;
-      padding: 12px;
-      background: radial-gradient(ellipse at 50% 0, #50304e, var(--ink) 65%);
-      color: var(--cream);
-      font: 500 15px/1.4 system-ui, sans-serif;
-    }
-
-    main { width: min(100%, 530px); }
-    header, .hud, .controls, .actions { display: flex; align-items: center; gap: 8px; }
-    header { justify-content: space-between; margin-bottom: 8px; }
-    .brand { letter-spacing: .16em; font-size: .78rem; font-weight: 900; }
-
-    button {
-      min-height: 42px;
-      padding: 9px 15px;
-      border: 0;
-      border-radius: 999px;
-      background: var(--gold);
-      color: #27152d;
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-      touch-action: manipulation;
-    }
-
-    button:focus-visible { outline: 3px solid white; outline-offset: 3px; }
-    button:disabled { opacity: .65; cursor: default; }
-    .secondary { background: #ffffff16; color: var(--cream); border: 1px solid #ffffff30; }
-
-    .stage {
-      position: relative;
-      isolation: isolate;
-      overflow: hidden;
-      border: 1px solid #ffffff30;
-      border-radius: 26px;
-      background: #271b38;
-      box-shadow: 0 20px 70px #0d0617aa;
-    }
-
-    canvas { display: block; width: 100%; height: min(70svh, 680px); touch-action: none; }
-    .hud { position: absolute; inset: 12px 12px auto; justify-content: space-between; pointer-events: none; z-index: 1; }
-    .slots { display: flex; gap: 5px; }
-    .slot, .stats { background: #21152bed; border: 1px solid #ffffff40; border-radius: 9px; }
-    .slot { display: grid; place-items: center; width: 30px; height: 34px; color: #e5c9e8; font-weight: 900; }
-    .slot.filled { background: var(--gold); color: #281731; animation: pop .26s ease-out; }
-    @keyframes pop { 50% { transform: scale(1.2); } }
-    .stats { padding: 5px 8px; text-align: right; font-size: .8rem; }
-    #hearts { color: var(--pink); letter-spacing: .1em; }
-
-    #cue {
-      position: absolute;
-      bottom: 8%;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 5px 12px;
-      border-radius: 999px;
-      background: #21152bee;
-      color: var(--gold);
-      text-align: center;
-      width: max-content;
-      max-width: 95%;
-      pointer-events: none;
-    }
-
-    .card {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(6px, 1.8svh, 16px);
-      padding: 12px;
-      text-align: center;
-      background: radial-gradient(ellipse at top, #7d416a, #2b1a3a 70%, #21152b);
-    }
-
-    .card.dim { background: #20132bed; }
-    h1, p { margin: 0; }
-    h1 { font: 800 clamp(2rem, 8vw, 4rem)/.94 Georgia, serif; letter-spacing: -.045em; text-wrap: balance; }
-    .card p { max-width: 34ch; color: #f4dae9; }
-
-    .portrait {
-      width: clamp(45px, 13svh, 104px);
-      aspect-ratio: 1;
-      object-fit: cover;
-      object-position: center 24%;
-      border: 3px solid var(--gold);
-      border-radius: 50%;
-      transform: rotate(-8deg);
-    }
-
-    .icon { font-size: clamp(29px, 7svh, 62px); line-height: 1; }
-    .controls { justify-content: center; margin-top: 9px; }
-    .controls button { min-width: 52px; }
-    .controls .jump { min-width: 110px; }
-    #confetti { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
-    #confetti i { position: absolute; top: -15px; width: 8px; height: 14px; animation: fall 2s ease-in both; }
-    @keyframes fall { to { transform: translateY(75vh) rotate(770deg); opacity: 0; } }
-
-    #cake-card h1 { font-size: clamp(1.55rem, 6vw, 2.8rem); }
-
-    #cake-board {
-      position: relative;
-      width: min(85%, 298px);
-      height: clamp(100px, 28svh, 208px);
-      min-height: 0;
-      padding: 0;
-      background: transparent;
-      touch-action: none;
-      isolation: isolate;
-    }
-
-    #cake-board span { position: absolute; display: block; pointer-events: none; }
-
-    .plate {
-      inset: 67% 0 5%;
-      border-radius: 50%;
-      background: radial-gradient(ellipse at 50% 29%, #fff5ed 25%, #dca9c2 73%, #846080 88%);
-      box-shadow: 0 12px 22px #1b102899, inset 0 -5px 0 #c28bac;
-    }
-
-    .sponge {
-      inset: 34% 12% 21%;
-      border-radius: 0 0 50% 50% / 0 0 32% 32%;
-      background:
-        radial-gradient(ellipse at 40% 15%, #fff4e36e, transparent 70%),
-        repeating-linear-gradient(to bottom, #914e42 0 12%, #63322e 12% 19%,
-          #f8c0bf 19% 27%, #bd7961 27% 42%);
-      box-shadow: inset -18px 0 25px #5023338c, 0 9px 12px #29203670;
-    }
-
-    .frosting {
-      inset: 16% 12% 48%;
-      border: 3px solid #fdb7c8;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 23% 40%, #fff7cf 0 2%, transparent 3%),
-        radial-gradient(circle at 74% 57%, #fff5c3 0 2%, transparent 3%),
-        radial-gradient(circle at 60% 25%, #b64c71 0 2%, transparent 3%),
-        radial-gradient(ellipse at 42% 30%, #ffd6d8, #e999b3 68%, #b35a86);
-      box-shadow: inset 0 3px 7px #fff4de99, 0 5px 0 #ba6d89;
-    }
-
-    .berries {
-      inset: 21% 0 auto;
-      padding-left: .35em;
-      color: #8e2454;
-      text-align: center;
-      text-shadow: 0 2px 1px #64233e66;
-      font-size: clamp(16px, 4svh, 27px);
-      letter-spacing: .35em;
-    }
-
-    .cut-mark {
-      top: 34%;
-      left: 50%;
-      width: 28%;
-      height: 2px;
-      transform-origin: left center;
-      background: #813851;
-      box-shadow: 0 1px #ffd0d6;
-    }
-
-    .knife {
-      top: 4%;
-      left: 52%;
-      width: 47%;
-      height: 12%;
-      z-index: 1;
-      opacity: 0;
-      border-radius: 45% 10% 15% 45%;
-      background: linear-gradient(#fff 15%, #b8c4d4 52%, #77859a 76%, #e6efff);
-      box-shadow: 1px 3px 6px #20162880;
-    }
-
-    .knife::after {
-      content: "";
-      position: absolute;
-      top: -6%;
-      right: -7%;
-      width: 36%;
-      height: 112%;
-      border-radius: 20% 35% 30% 20%;
-      background: linear-gradient(#625065, #2b1e30);
-    }
-
-    .cutting .knife { animation: slice .85s ease-in-out both; }
-
-    @keyframes slice {
-      0% { opacity: 0; transform: translate(30%, -75%) rotate(-37deg); }
-      25% { opacity: 1; transform: translate(2%, 2%) rotate(-25deg); }
-      78% { opacity: 1; transform: translate(-48%, 210%) rotate(-12deg); }
-      100% { opacity: 0; transform: translate(10%, -60%) rotate(-28deg); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: .01ms !important; }
-      .cutting .knife { animation: none; opacity: 1; transform: translate(-38%, 170%) rotate(-12deg); }
-    }
-  </style>
+#cake-card .cake-board{position:relative;width:min(80%,290px);height:clamp(100px,27svh,208px);background:none;touch-action:none}
+.cake-board span{position:absolute;display:block;pointer-events:none}
+.cake-plate{inset:65% 0 5%;border-radius:50%;background:radial-gradient(ellipse at 50% 20%,#fff6e5,#c38fad 80%);box-shadow:0 10px 18px #180e27}
+.cake-sponge{inset:34% 12% 21%;border-radius:0 0 50% 50% / 0 0 32% 32%;background:repeating-linear-gradient(#873f37 0 14px,#f5c0b3 14px 21px,#b96e56 21px 33px);box-shadow:inset -18px 0 23px #4c243b88}
+.cake-icing{inset:15% 12% 47%;border-radius:50%;background:radial-gradient(ellipse at 42% 25%,#ffdae1,#e493af 70%,#aa4976);box-shadow:inset 0 3px 6px #fff6dfaa,0 5px #bb6387}
+.cake-berries{top:22%;left:0;right:0;color:#932750;letter-spacing:.4em}
+.cake-mark{top:34%;left:50%;width:28%;height:2px;background:#813851;transform-origin:left}
+.cake-knife{z-index:1;top:0;left:52%;width:43%;height:12%;opacity:0;border-radius:70% 12% 12% 40%;background:linear-gradient(#fff,#b8c4d4,#77859a,#e6efff);box-shadow:0 3px 5px #25192f80}
+.cake-knife::after{content:"";position:absolute;right:-10%;top:-5%;width:36%;height:110%;border-radius:8px;background:#453149}
+.cutting .cake-knife{animation:cake-slice .85s ease-in-out both}
+@keyframes cake-slice{0%{opacity:0;transform:translate(30%,-65%) rotate(-35deg)}25%{opacity:1;transform:rotate(-25deg)}80%{opacity:1;transform:translate(-48%,220%) rotate(-12deg)}100%{opacity:0;transform:translate(-48%,240%) rotate(-12deg)}}
+@media(prefers-reduced-motion:reduce){.cutting .cake-knife{animation:none;opacity:1;transform:translate(-48%,220%) rotate(-12deg)}}
+</style>
 </head>
 <body>
 <main>
-  <header>
-    <span class="brand">CAKE RUN</span>
-    <div class="actions">
-      <button id="sound" class="secondary" type="button" aria-pressed="false">Sound off</button>
-      <button id="pause" class="secondary" type="button" hidden>Pause</button>
-    </div>
-  </header>
-
+  <header><span class="brand">CAKE RUN</span><div class="actions">
+    <button id="sound" class="secondary" type="button" aria-pressed="false">Sound off</button>
+    <button id="pause" class="secondary" type="button" hidden>Pause</button>
+  </div></header>
   <div class="stage">
-    <canvas id="track" width="440" height="650" tabindex="-1" aria-label="Three-lane birthday runner"></canvas>
-
+    <canvas id="track" width="440" height="650" aria-label="Three-lane birthday runner"></canvas>
     <div id="hud" class="hud" hidden>
       <div id="slots" class="slots" aria-label="0 of 4 letters collected"></div>
-      <div class="stats">
-        <div id="hearts"></div>
-        <div id="stars"></div>
-      </div>
+      <div class="stats"><div id="hearts"></div><div id="stars"></div></div>
     </div>
-
     <p id="cue" role="status" hidden></p>
     <div id="confetti" aria-hidden="true"></div>
-
     <section id="card" class="card" aria-labelledby="title">
       <img id="portrait" class="portrait" alt="Bhutki" hidden>
-      <div id="icon" class="icon" aria-hidden="true">🎂</div>
+      <div class="icon" id="icon" aria-hidden="true">🎂</div>
       <h1 id="title">Happy Birthday Bhutki!</h1>
       <p id="copy">Make a wish and cut the cake.</p>
       <button id="action" type="button">Cut the cake</button>
     </section>
-
     <section id="cake-card" class="card" aria-labelledby="cake-title" hidden>
       <h1 id="cake-title">Make a wish, Bhutki!</h1>
-      <button id="cake-board" type="button" aria-label="Tap or swipe down to cut a slice">
-        <span class="plate"></span>
-        <span class="sponge"></span>
-        <span class="frosting"></span>
-        <span class="berries">● ● ●</span>
-        <span class="knife"></span>
+      <button id="cake-board" class="cake-board" type="button" aria-label="Tap or swipe down to cut a slice">
+        <span class="cake-plate"></span><span class="cake-sponge"></span>
+        <span class="cake-icing"></span><span class="cake-berries">● ● ●</span>
+        <span class="cake-knife"></span>
       </button>
-      <p id="cake-count" role="status">0 of 4 slices cut</p>
+      <p id="cake-count" role="status"></p>
       <p>Swipe down across the cake or tap to cut.</p>
       <button id="cake-cut" type="button">Cut a slice</button>
     </section>
   </div>
-
   <div id="controls" class="controls" hidden>
-    <button id="left" class="secondary" type="button" aria-label="Move left">←</button>
-    <button id="jump" class="jump" type="button">↑ Jump</button>
-    <button id="right" class="secondary" type="button" aria-label="Move right">→</button>
+    <button id="left" class="secondary" aria-label="Move left">←</button>
+    <button id="jump" class="jump">↑ Jump</button>
+    <button id="right" class="secondary" aria-label="Move right">→</button>
   </div>
 </main>
-
+<audio id="bgm" src="./bgm.mp3" preload="none" loop></audio>
 <script>
 "use strict";
-
 const get = id => document.getElementById(id);
 const track = get("track");
 const pen = track.getContext("2d");
 const word = "CAKE";
 const birthday = "Happy Birthday Bhutki!";
-const birthdayMessage =
-  "I hope this made you laugh. Have the best birthday, eat the biggest slice, and save me the corner piece! 🎂";
+const birthdayMessage = "I hope this made you laugh. Have the best birthday, eat the biggest slice, and save me the corner piece! 🎂";
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const palette = ["#ffda89", "#ff9dbb", "#adf4d3", "#c2abff"];
 const runner = new Image();
 const chaser = new Image();
-const board = get("cake-board");
-const cutButton = get("cake-cut");
-const playerDepth = .88;
-const jumpDuration = .86;
-
-let mode = "intro";
-let slices = 0;
-let cutting = false;
-let collected = 0, hearts = 3, stars = 0, best = 0;
-let lane = 0, position = 0, jumpAge = Infinity;
-let elapsed = 0, distance = 0, spawnAt = 0, wave = 0;
-let countdown = 0, countdownNumber = 0, lastFrame = null;
-let message = "", messageUntil = 0;
-let objects = [], pickups = [];
-let sound = false, audio;
-
-try { best = Number(localStorage.getItem("bhutki-cake-best")) || 0; } catch {}
 
 function loadPhoto(image, filenames) {
   let index = 0;
@@ -320,11 +119,10 @@ function loadPhoto(image, filenames) {
 }
 
 runner.onload = () => {
-  if (mode !== "intro" && mode !== "wish") return;
+  if (mode !== "intro") return;
   get("portrait").src = runner.src;
   get("portrait").hidden = false;
 };
-
 loadPhoto(runner, ["bhutki.png", "image_2026-11-24_21-53-15.png"]);
 loadPhoto(chaser, ["chaser.jpg", "chaser.jpeg", "chaser.png", "image(20261124-163053).png"]);
 
@@ -336,6 +134,27 @@ const slots = Array.from(word, letter => {
   get("slots").append(slot);
   return slot;
 });
+let mode = "intro";
+let collected = 0, hearts = 3, stars = 0, best = 0;
+let lane = 0, position = 0, jumpAge = Infinity;
+let elapsed = 0, distance = 0, spawnAt = 0, wave = 0;
+let countdown = 0, countdownNumber = 0, lastFrame = null;
+let message = "", messageUntil = 0;
+let objects = [], pickups = [];
+let sound = false, audio;
+const bgm = get("bgm");
+bgm.volume = .22;
+
+function syncMusic() {
+  if (sound && mode === "running" && !document.hidden) {
+    bgm.play().catch(() => {
+      // The game and sound effects still work if the MP3 is absent or playback is blocked.
+    });
+  } else {
+    bgm.pause();
+  }
+}
+try { best = Number(localStorage.getItem("bhutki-cake-best")) || 0; } catch {}
 
 function updateHud() {
   slots.forEach((slot, index) => slot.classList.toggle("filled", index < collected));
@@ -347,7 +166,6 @@ function updateHud() {
 
 function play(notes) {
   if (!sound || !audio || audio.state !== "running") return;
-
   notes.forEach((frequency, index) => {
     const oscillator = audio.createOscillator();
     const gain = audio.createGain();
@@ -363,44 +181,28 @@ function play(notes) {
 
 get("sound").onclick = async () => {
   const Audio = window.AudioContext || window.webkitAudioContext;
-  if (!Audio) return;
-
   sound = !sound;
-  if (sound) {
+  syncMusic();
+  get("sound").textContent = sound ? "Sound on" : "Sound off";
+  get("sound").setAttribute("aria-pressed", String(sound));
+  if (sound && Audio) {
     try {
       audio ||= new Audio();
       await audio.resume();
       play([440, 660]);
     } catch {
-      sound = false;
+      // Background music can still work if Web Audio is unavailable.
     }
   }
-
-  get("sound").textContent = sound ? "Sound on" : "Sound off";
-  get("sound").setAttribute("aria-pressed", String(sound));
 };
-
-function setCue(text) {
-  const cue = get("cue");
-  if (cue.textContent !== text) cue.textContent = text;
-  cue.hidden = !text;
-}
 
 function showCard(state, icon, title, copy, button) {
   mode = state;
+  syncMusic();
   get("cake-card").hidden = true;
   get("card").hidden = false;
   get("card").classList.toggle("dim", state === "paused");
-
-  const portrait = get("portrait");
-  const photo = state === "warning" ? chaser : runner;
-  const showPortrait = (state === "warning" || state === "wish") && photo.naturalWidth > 0;
-  portrait.hidden = !showPortrait;
-  if (showPortrait) {
-    portrait.src = photo.src;
-    portrait.alt = state === "warning" ? "Dhruba" : "Bhutki";
-  }
-
+  get("portrait").hidden = state !== "letter" || !runner.naturalWidth;
   get("icon").textContent = icon;
   get("title").textContent = title;
   get("copy").textContent = copy;
@@ -409,131 +211,14 @@ function showCard(state, icon, title, copy, button) {
   get("controls").hidden = true;
   get("pause").hidden = true;
   setCue("");
-  if (button) get("action").focus({ preventScroll: true });
+  get("action").focus({preventScroll:true});
 }
 
-function updateCake() {
-  board.querySelectorAll(".cut-mark").forEach(mark => mark.remove());
-  const angles = [22, 153, 205, 335];
-
-  for (let index = 0; index < slices; index++) {
-    const mark = document.createElement("span");
-    mark.className = "cut-mark";
-    mark.style.transform = "rotate(" + angles[index] + "deg)";
-    mark.setAttribute("aria-hidden", "true");
-    board.append(mark);
-  }
-
-  get("cake-count").textContent = slices + " of 4 slices cut";
+function setCue(text) {
+  const cue = get("cue");
+  if (cue.textContent !== text) cue.textContent = text;
+  cue.hidden = !text;
 }
-
-function openCake() {
-  mode = "cake";
-  get("card").hidden = true;
-  get("cake-card").hidden = false;
-  get("hud").hidden = true;
-  get("controls").hidden = true;
-  get("pause").hidden = true;
-  get("cake-title").textContent = slices ? "You got the cake back!" : "Make a wish, Bhutki!";
-  cutButton.disabled = false;
-  setCue("");
-  updateCake();
-  cutButton.focus({ preventScroll: true });
-}
-
-function interruptCake() {
-  showCard(
-    "warning", "😱", "Oh no, Bhutki!",
-    "Dhruba is behind you! He’s chasing you for the cake. Collect C A K E to finish cutting it.",
-    ""
-  );
-  play([392, 294, 196]);
-
-  setTimeout(() => {
-    if (mode !== "warning") return;
-    begin();
-    if (document.hidden) pauseGame();
-  }, 2400);
-}
-
-function celebrate() {
-  const confetti = get("confetti");
-  confetti.replaceChildren();
-  if (reducedMotion) return;
-
-  for (let index = 0; index < 40; index++) {
-    const piece = document.createElement("i");
-    piece.style.left = Math.random() * 100 + "%";
-    piece.style.background = palette[index % palette.length];
-    piece.style.animationDelay = Math.random() * .65 + "s";
-    piece.onanimationend = () => piece.remove();
-    confetti.append(piece);
-  }
-}
-
-function showBirthdayWish() {
-  play([523, 659, 784, 1047]);
-  showCard("wish", "🎂", birthday, birthdayMessage, "Play again");
-  celebrate();
-}
-
-function cutSlice() {
-  if (mode !== "cake" || cutting || slices >= 4) return;
-
-  cutting = true;
-  cutButton.disabled = true;
-  board.classList.add("cutting");
-  play([294, 392]);
-
-  setTimeout(() => {
-    slices++;
-    updateCake();
-    play([523, 659]);
-
-    setTimeout(() => {
-      board.classList.remove("cutting");
-      cutting = false;
-
-      if (slices === 1) {
-        interruptCake();
-      } else if (slices === 4) {
-        showBirthdayWish();
-      } else {
-        cutButton.disabled = false;
-      }
-    }, reducedMotion ? 85 : 320);
-  }, reducedMotion ? 85 : 620);
-}
-
-let cakeSwipe = null;
-board.onpointerdown = event => {
-  if (cakeSwipe || cutting) return;
-  cakeSwipe = { id: event.pointerId, y: event.clientY };
-  board.setPointerCapture(event.pointerId);
-};
-board.onpointerup = event => {
-  if (cakeSwipe?.id !== event.pointerId) return;
-  const distance = event.clientY - cakeSwipe.y;
-  cakeSwipe = null;
-  if (distance >= 22) cutSlice();
-};
-board.onlostpointercapture = event => {
-  if (cakeSwipe?.id === event.pointerId) cakeSwipe = null;
-};
-board.onclick = cutSlice;
-cutButton.onclick = cutSlice;
-
-get("action").onclick = () => {
-  if (mode === "intro" || mode === "wish") {
-    slices = collected = stars = 0;
-    get("confetti").replaceChildren();
-    openCake();
-  } else if (mode === "paused") {
-    resume();
-  } else if (mode === "caught") {
-    begin();
-  }
-};
 
 function begin() {
   hearts = 3;
@@ -544,39 +229,50 @@ function begin() {
   pickups = [];
   message = "";
   messageUntil = 0;
+  get("confetti").replaceChildren();
   updateHud();
   resume();
 }
 
 function resume() {
   mode = "countdown";
+  syncMusic();
   countdown = 3;
   countdownNumber = 0;
   get("card").hidden = true;
   get("hud").hidden = false;
   get("controls").hidden = false;
   get("pause").hidden = false;
-  track.focus({ preventScroll: true });
+  get("track").focus({preventScroll:true});
 }
+
+track.tabIndex = -1;
+get("action").onclick = () => {
+  if (mode === "intro" || mode === "letter") {
+    slices = collected = stars = 0;
+    bgm.currentTime = 0;
+    get("confetti").replaceChildren();
+    openCake();
+  } else if (mode === "paused") {
+    resume();
+  } else {
+    begin();
+  }
+};
 
 function pauseGame() {
   if (mode === "running" || mode === "countdown") {
-    showCard("paused", "Ⅱ", "Taking a breather?",
-      "Your letters and lives are saved for this run.", "Resume chase");
+    showCard("paused", "Ⅱ", "Taking a breather?", "Your letters and lives are saved for this run.", "Resume chase");
   }
 }
-
 get("pause").onclick = pauseGame;
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) pauseGame();
-});
+document.addEventListener("visibilitychange", () => { if (document.hidden) pauseGame(); });
 
 function move(direction) {
-  if (mode === "running" || mode === "countdown") {
-    lane = Math.max(-1, Math.min(1, lane + direction));
-  }
+  if (mode === "running" || mode === "countdown") lane = Math.max(-1, Math.min(1, lane + direction));
 }
 
+const jumpDuration = .86;
 function jump() {
   if (mode !== "running" || jumpAge < jumpDuration) return;
   jumpAge = 0;
@@ -586,15 +282,12 @@ function jump() {
 get("left").onclick = () => move(-1);
 get("right").onclick = () => move(1);
 get("jump").onclick = jump;
-
 window.addEventListener("keydown", event => {
   if (event.key === "Escape") { pauseGame(); return; }
   if (mode !== "running" && mode !== "countdown") return;
   if (!["ArrowLeft", "ArrowRight", "ArrowUp", " "].includes(event.key)) return;
-
   event.preventDefault();
   if (event.repeat) return;
-
   if (event.key === "ArrowLeft") move(-1);
   else if (event.key === "ArrowRight") move(1);
   else jump();
@@ -603,61 +296,128 @@ window.addEventListener("keydown", event => {
 let swipe;
 track.onpointerdown = event => {
   if (swipe) return;
-  swipe = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  swipe = {id:event.pointerId, x:event.clientX, y:event.clientY};
   track.setPointerCapture(event.pointerId);
 };
-
 function handleSwipe(event) {
   if (swipe?.id !== event.pointerId) return;
   const x = event.clientX - swipe.x;
   const y = event.clientY - swipe.y;
   if (Math.max(Math.abs(x), Math.abs(y)) < 20) return;
-
   swipe = null;
   if (Math.abs(x) >= Math.abs(y)) move(Math.sign(x));
   else if (y < 0) jump();
 }
-
 track.onpointermove = handleSwipe;
-track.onpointerup = event => {
-  handleSwipe(event);
-  if (swipe?.id === event.pointerId) swipe = null;
+track.onpointerup = event => { handleSwipe(event); if (swipe?.id === event.pointerId) swipe = null; };
+track.onlostpointercapture = event => { if (swipe?.id === event.pointerId) swipe = null; };
+
+const playerDepth = .88;
+const palette = ["#ffda89", "#ff9dbb", "#adf4d3", "#c2abff"];
+function finish() {
+  openCake();
+}
+
+function birthdayWish() {
+  play([523, 659, 784, 1047]);
+  showCard("letter", "🎂", birthday, birthdayMessage, "Play again");
+  const portrait = get("portrait");
+  if (runner.naturalWidth) portrait.src = runner.src;
+  if (reducedMotion) return;
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement("i");
+    piece.style.cssText = "left:" + Math.random()*100 + "%;background:" + palette[i%4] +
+      ";animation-delay:" + Math.random()*.65 + "s";
+    get("confetti").append(piece);
+    piece.onanimationend = () => piece.remove();
+  }
+}
+
+const cakeBoard = get("cake-board");
+const cutButton = get("cake-cut");
+let slices = 0;
+let cakeSwipe = null;
+
+function openCake() {
+  mode = "cake";
+  syncMusic();
+  get("card").hidden = true;
+  get("hud").hidden = true;
+  get("controls").hidden = true;
+  get("pause").hidden = true;
+  get("cake-card").hidden = false;
+  get("cake-title").textContent = slices ? "You got the cake back!" : "Make a wish, Bhutki!";
+  if (!slices) cakeBoard.querySelectorAll(".cake-mark").forEach(mark => mark.remove());
+  get("cake-count").textContent = slices + " of 4 slices cut";
+  cutButton.disabled = false;
+  cutButton.focus({preventScroll:true});
+  setCue("");
+}
+
+function cutSlice() {
+  if (mode !== "cake" || cutButton.disabled) return;
+  cutButton.disabled = true;
+  cakeBoard.classList.add("cutting");
+  play([294,392]);
+  setTimeout(() => {
+    const mark = document.createElement("span");
+    mark.className = "cake-mark";
+    mark.style.transform = "rotate(" + [22,153,205,335][slices] + "deg)";
+    cakeBoard.append(mark);
+    slices++;
+    get("cake-count").textContent = slices + " of 4 slices cut";
+
+    setTimeout(() => {
+      cakeBoard.classList.remove("cutting");
+      if (slices === 1) {
+        showCard("warning", "😱", "Oh no, Bhutki!",
+          "Dhruba is behind you! He’s chasing you for the cake. Collect C A K E to finish cutting it.", "");
+        const portrait = get("portrait");
+        if (chaser.naturalWidth) {
+          portrait.src = chaser.src;
+          portrait.alt = "Dhruba";
+          portrait.hidden = false;
+        }
+        setTimeout(() => {
+          begin();
+          if (document.hidden) pauseGame();
+        }, 2400);
+      } else if (slices === 4) {
+        get("portrait").alt = "Bhutki";
+        birthdayWish();
+      } else {
+        cutButton.disabled = false;
+      }
+    }, reducedMotion ? 85 : 290);
+  }, reducedMotion ? 85 : 620);
+}
+
+cutButton.onclick = cakeBoard.onclick = cutSlice;
+cakeBoard.onpointerdown = event => {
+  cakeSwipe = {id:event.pointerId,y:event.clientY};
+  cakeBoard.setPointerCapture(event.pointerId);
 };
-track.onlostpointercapture = event => {
-  if (swipe?.id === event.pointerId) swipe = null;
+cakeBoard.onpointerup = event => {
+  if (cakeSwipe?.id !== event.pointerId) return;
+  const distance = event.clientY - cakeSwipe.y;
+  cakeSwipe = null;
+  if (distance >= 22) cutSlice();
+};
+cakeBoard.onlostpointercapture = event => {
+  if (cakeSwipe?.id === event.pointerId) cakeSwipe = null;
 };
 
 function addWave() {
   const route = [1, 0, -1, 1, -1, 0, 1];
   const target = route[wave % route.length];
-
   if (wave % 3 === 2 && !objects.some(item => item.kind === "letter")) {
-    objects.push({ kind: "letter", high: collected % 2 === 1, lane: target, depth: 0 });
+    const high = collected % 2 === 1;
+    objects.push({kind:"letter", high, lane:target, depth:0});
   } else {
     const safeLane = target === 1 ? -1 : target + 1;
-    objects.push(
-      { kind: "poop", lane: target, depth: 0 },
-      { kind: "star", lane: safeLane, depth: 0 }
-    );
+    objects.push({kind:"poop", lane:target, depth:0}, {kind:"star", lane:safeLane, depth:0});
   }
   wave++;
-}
-
-function hit(item, text) {
-  item.done = true;
-  if (elapsed < messageUntil) return;
-
-  hearts--;
-  message = text;
-  messageUntil = elapsed + .85;
-  play([150, 95]);
-  updateHud();
-
-  if (!hearts) {
-    showCard("caught", "💩", "Caught!",
-      "You kept " + collected + " of 4 letters. Try the chase again.",
-      "Retry from checkpoint");
-  }
 }
 
 function advance(dt) {
@@ -665,7 +425,6 @@ function advance(dt) {
   jumpAge += dt;
   const speed = .34 + collected * .022;
   distance += speed * dt;
-
   if (elapsed >= spawnAt) {
     addWave();
     spawnAt += 1.12;
@@ -673,40 +432,25 @@ function advance(dt) {
 
   const airborne = jumpAge > .075 && jumpAge < .76;
   let jumpCue = "";
-
   for (const item of objects) {
     item.depth += speed * dt;
     const gap = playerDepth - item.depth;
     const inLane = Math.abs(item.lane - position) < .4;
-
-    if (item.high && gap > .025 && gap < .42) {
-      jumpCue = "↑ Jump for " + word[collected] + (gap < .16 ? " now!" : "");
-    }
-
+    if (item.high && gap > .025 && gap < .42) jumpCue = "↑ Jump for " + word[collected] + (gap < .16 ? " now!" : "");
     if (item.done || !inLane || Math.abs(gap) > .056) continue;
-
     if (item.kind === "letter") {
       if (item.high && !airborne) {
         if (gap < -.026) hit(item, "Too low! Jump for " + word[collected] + ".");
-        if (mode !== "running") return;
         continue;
       }
-
       item.done = true;
       const origin = project(item.lane, item.depth);
-      pickups.push({
-        x: origin.x, y: origin.y - (item.high ? 65 : 32),
-        letter: word[collected], age: 0
-      });
-
+      pickups.push({x:origin.x, y:origin.y - (item.high ? 65 : 32), letter:word[collected], age:0});
       collected++;
+      setCue("");
       play([659, 880, 1047]);
       updateHud();
-
-      if (collected === word.length) {
-        openCake();
-        return;
-      }
+      if (collected === word.length) { finish(); return; }
     } else if (item.kind === "star") {
       item.done = true;
       stars++;
@@ -717,241 +461,176 @@ function advance(dt) {
       play([810, 1215]);
       updateHud();
     } else if (!airborne) {
-      hit(item, "Squelch! Dhruba is closing in.");
+      hit(item, "Squelch! The chaser is closing in.");
     }
-
     if (mode !== "running") return;
   }
-
   objects = objects.filter(item => !item.done && item.depth < 1.16);
   pickups = pickups.filter(item => (item.age += dt) < .38);
   setCue(elapsed < messageUntil ? message : jumpCue || (elapsed < 3.5 ? "Swipe or use the arrow keys" : ""));
 }
 
-function project(lane, depth) {
-  const perspective = .15 + .85 * depth;
-  return {
-    x: 220 + lane * 122 * perspective,
-    y: 148 + 477 * Math.pow(depth, 1.43),
-    scale: perspective
-  };
+function hit(item, text) {
+  item.done = true;
+  if (elapsed < messageUntil) return;
+  hearts--;
+  message = text;
+  messageUntil = elapsed + .85;
+  play([150, 95]);
+  updateHud();
+  if (!hearts) showCard("caught", "💩", "Caught!", "You kept " + collected + " of 4 letters. Try the chase again.", "Retry from checkpoint");
 }
 
+function project(lane, depth) {
+  const perspective = .15 + .85 * depth;
+  return {x:220 + lane * 122 * perspective, y:148 + 477 * Math.pow(depth, 1.43), scale:perspective};
+}
 function shape(points, color) {
   pen.fillStyle = color;
   pen.beginPath();
-  points.forEach(([x, y], index) => {
-    if (index) pen.lineTo(x, y);
-    else pen.moveTo(x, y);
-  });
+  points.forEach(([x,y], index) => index ? pen.lineTo(x,y) : pen.moveTo(x,y));
   pen.closePath();
   pen.fill();
 }
-
 function textAt(text, x, y, size, color = "#fff6e2") {
   pen.fillStyle = color;
   pen.font = "900 " + size + "px system-ui";
   pen.textAlign = "center";
   pen.textBaseline = "middle";
-  pen.fillText(text, x, y);
+  pen.fillText(text,x,y);
 }
-
-function circle(x, y, radius, color) {
+function circle(x,y,r,color) {
   pen.fillStyle = color;
   pen.beginPath();
-  pen.arc(x, y, radius, 0, Math.PI * 2);
+  pen.arc(x,y,r,0,Math.PI*2);
   pen.fill();
 }
 
-const skyline = Array.from({ length: 18 }, (_, index) => ({
-  x: index * 26 - 12, h: 24 + (index * 37) % 92, w: 18 + index % 4 * 2
-}));
-
+const skyline = Array.from({length:18}, (_,i) => ({x:i*26-12,h:24+(i*37)%92,w:18+i%4*2}));
 function scenery() {
-  const sky = pen.createLinearGradient(0, 0, 0, 360);
-  sky.addColorStop(0, "#241534");
-  sky.addColorStop(.58, "#884d72");
-  sky.addColorStop(1, "#f7a982");
+  const sky = pen.createLinearGradient(0,0,0,360);
+  sky.addColorStop(0,"#241534");
+  sky.addColorStop(.58,"#884d72");
+  sky.addColorStop(1,"#f7a982");
   pen.fillStyle = sky;
-  pen.fillRect(0, 0, 440, 650);
-  circle(327, 75, 22, "#ffe5a8");
-
-  for (let index = 0; index < 24; index++) {
-    circle((index * 73 + 19) % 440, (index * 29 + 11) % 105,
-      index % 4 === 0 ? 1.5 : .75, "#fff1c7aa");
-  }
-
+  pen.fillRect(0,0,440,650);
+  circle(327,75,22,"#ffe5a8");
+  for (let i=0;i<24;i++) circle((i*73+19)%440,(i*29+11)%105, i%4===0?1.5:.75,"#fff1c7aa");
   for (const building of skyline) {
     pen.fillStyle = "#372640";
-    pen.fillRect(building.x, 160 - building.h, building.w, building.h + 26);
+    pen.fillRect(building.x,160-building.h,building.w,building.h+26);
     pen.fillStyle = "#ffd5849c";
-    for (let y = 168 - building.h; y < 156; y += 13) {
-      pen.fillRect(building.x + 5, y, 4, 5);
-    }
+    for(let y=168-building.h;y<156;y+=13) pen.fillRect(building.x+5,y,4,5);
   }
+  shape([[0,177],[220,141],[440,177],[440,650],[0,650]],"#3b2947");
+  shape([[194,145],[246,145],[438,650],[2,650]],"#9d557d");
+  shape([[199,145],[241,145],[419,650],[21,650]],"#4c365b");
 
-  shape([[0, 177], [220, 141], [440, 177], [440, 650], [0, 650]], "#3b2947");
-  shape([[194, 145], [246, 145], [438, 650], [2, 650]], "#9d557d");
-  shape([[199, 145], [241, 145], [419, 650], [21, 650]], "#4c365b");
-
-  for (const divider of [-.5, .5]) {
-    for (let index = 0; index < 9; index++) {
-      const near = (index / 9 + distance) % 1;
-      const far = Math.max(0, near - .055);
-      const a = project(divider, far);
-      const b = project(divider, near);
+  for (const divider of [-.5,.5]) {
+    for(let i=0;i<9;i++) {
+      const near = (i/9 + distance) % 1;
+      const far = Math.max(0,near-.055);
+      const a = project(divider,far);
+      const b = project(divider,near);
       pen.strokeStyle = "#edc4caaf";
-      pen.lineWidth = 1 + 4 * near;
-      pen.beginPath();
-      pen.moveTo(a.x, a.y);
-      pen.lineTo(b.x, b.y);
-      pen.stroke();
+      pen.lineWidth = 1+4*near;
+      pen.beginPath(); pen.moveTo(a.x,a.y); pen.lineTo(b.x,b.y); pen.stroke();
     }
   }
-
-  for (let index = 0; index < 6; index++) {
-    const depth = (index / 6 + distance * .6) % 1;
-    for (const side of [-1, 1]) {
-      const point = project(side * 1.78, depth);
-      const lampY = point.y - 82 * point.scale;
+  for(let i=0;i<6;i++) {
+    const d = (i/6 + distance*.6) % 1;
+    for(const side of [-1,1]) {
+      const point = project(side*1.78,d);
       pen.fillStyle = "#2b1b36";
-      pen.fillRect(point.x - 2, lampY, 4, 82 * point.scale);
-      circle(point.x, lampY, 9 * point.scale, "#ffb97a44");
-      circle(point.x, lampY, 4 * point.scale, "#ffda89");
+      pen.fillRect(point.x-2,point.y-82*point.scale,4,82*point.scale);
+      circle(point.x,point.y-82*point.scale,9*point.scale,"#ffb97a44");
+      circle(point.x,point.y-82*point.scale,4*point.scale,"#ffda89");
     }
   }
-
-  textAt("✦  PARTY  ✦", 220, 132, 12, "#ffda89");
+  textAt("✦  PARTY  ✦",220,132,12,"#ffda89");
 }
 
-function character(photo, x, feet, scale, color, phase, lift, isRunner) {
+function character(photo, x, feet, size, color, phase, lift, isRunner) {
   pen.save();
   pen.fillStyle = "#1b1128a0";
-  pen.beginPath();
-  pen.ellipse(x, feet + 3, 24 * scale, 7 * scale, 0, 0, Math.PI * 2);
-  pen.fill();
-
-  pen.translate(x, feet - lift);
-  pen.scale(scale, scale);
-  const stride = reducedMotion ? 0 : Math.sin(phase) * 12;
-
+  pen.beginPath();pen.ellipse(x,feet+3,24*size,7*size,0,0,Math.PI*2);pen.fill();
+  pen.translate(x,feet-lift);
+  pen.scale(size,size);
+  const stride = reducedMotion ? 0 : Math.sin(phase)*12;
   pen.lineWidth = 8;
   pen.lineCap = "round";
   pen.strokeStyle = "#21162c";
-  pen.beginPath();
-  pen.moveTo(-7, -27);
-  pen.lineTo(-8 + stride, -3);
-  pen.moveTo(7, -27);
-  pen.lineTo(8 - stride, -3);
-  pen.stroke();
-
+  pen.beginPath();pen.moveTo(-7,-27);pen.lineTo(-8+stride,-3);
+  pen.moveTo(7,-27);pen.lineTo(8-stride,-3);pen.stroke();
   pen.strokeStyle = color;
-  pen.beginPath();
-  pen.moveTo(-10, -40);
-  pen.lineTo(-19 - stride * .4, -28);
-  pen.moveTo(10, -40);
-  pen.lineTo(19 + stride * .4, -28);
-  pen.stroke();
-
-  pen.fillStyle = color;
-  pen.beginPath();
-  pen.ellipse(0, -35, 15, 18, 0, 0, Math.PI * 2);
-  pen.fill();
-
+  pen.beginPath();pen.moveTo(-10,-40);pen.lineTo(-19-stride*.4,-28);
+  pen.moveTo(10,-40);pen.lineTo(19+stride*.4,-28);pen.stroke();
+  pen.fillStyle=color;
+  pen.beginPath();pen.ellipse(0,-35,15,18,0,0,Math.PI*2);pen.fill();
   pen.save();
-  pen.beginPath();
-  pen.arc(0, -64, 24, 0, Math.PI * 2);
-  pen.clip();
-  pen.fillStyle = "#ffc98a";
-  pen.fillRect(-24, -88, 48, 48);
-
-  if (photo.complete && photo.naturalWidth) {
-    const size = Math.min(photo.naturalWidth, photo.naturalHeight) * (isRunner ? .72 : .66);
-    pen.drawImage(photo, (photo.naturalWidth - size) / 2,
-      (photo.naturalHeight - size) * (isRunner ? .18 : .29),
-      size, size, -24, -88, 48, 48);
+  pen.beginPath();pen.arc(0,-64,24,0,Math.PI*2);pen.clip();
+  pen.fillStyle="#ffc98a";pen.fillRect(-24,-88,48,48);
+  if(photo.complete && photo.naturalWidth){
+    const size = Math.min(photo.naturalWidth,photo.naturalHeight)*(isRunner?.72:.66);
+    pen.drawImage(photo,(photo.naturalWidth-size)/2,(photo.naturalHeight-size)*(isRunner?.18:.29),
+      size,size,-24,-88,48,48);
   } else {
-    textAt(isRunner ? "B" : "D", 0, -64, 23, "#48283f");
+    textAt(isRunner?"B":"D",0,-64,23,"#48283f");
   }
   pen.restore();
-
-  pen.strokeStyle = "#fff5df";
-  pen.lineWidth = 2;
-  pen.beginPath();
-  pen.arc(0, -64, 24, 0, Math.PI * 2);
-  pen.stroke();
+  pen.strokeStyle="#fff5df";pen.lineWidth=2;
+  pen.beginPath();pen.arc(0,-64,24,0,Math.PI*2);pen.stroke();
   pen.restore();
 }
 
 function drawItem(item) {
   if (item.done) return;
-
-  const point = project(item.lane, item.depth);
-  const scale = point.scale;
-
-  if (item.kind === "poop" || item.high) {
-    textAt("💩", point.x, point.y - 15 * scale, 36 * scale);
-  }
-  if (item.kind === "star") {
-    textAt("★", point.x, point.y - 19 * scale, 28 * scale, "#ffda89");
-  }
+  const p = project(item.lane,item.depth);
+  const s = p.scale;
+  if (item.kind === "poop" || item.high) textAt("💩",p.x,p.y-15*s,36*s);
+  if (item.kind === "star") textAt("★",p.x,p.y-19*s,28*s,"#ffda89");
   if (item.kind === "letter") {
-    const y = point.y - (item.high ? 70 : 35) * scale;
-    circle(point.x, y, 23 * scale, "#fff3bc44");
-    circle(point.x, y, 19 * scale, "#ffda89");
-    textAt(word[collected], point.x, y, 24 * scale, "#3a2545");
-    if (item.high) textAt("↑", point.x, y - 30 * scale, 20 * scale);
+    const y = p.y-(item.high?70:35)*s;
+    circle(p.x,y,23*s,"#fff3bc44");
+    circle(p.x,y,19*s,"#ffda89");
+    textAt(word[collected],p.x,y,24*s,"#3a2545");
+    if (item.high) textAt("↑",p.x,y-30*s,20*s,"#fff6e2");
   }
 }
 
 function draw() {
   scenery();
-  const player = project(position, playerDepth);
-  const lift = jumpAge < jumpDuration ? 86 * Math.sin(Math.PI * jumpAge / jumpDuration) : 0;
-  const chaserDepth = 1.02 + (hearts - 3) * .043;
-  const pursuer = project(position * .76 + .32, chaserDepth);
-
-  const sprites = objects.map(item => ({ depth: item.depth, render: () => drawItem(item) }));
+  const p = project(position,playerDepth);
+  const lift = jumpAge<jumpDuration ? 86*Math.sin(Math.PI*jumpAge/jumpDuration) : 0;
+  const pursuer = project(position*.76+.32,1.02+(hearts-3)*.043);
+  const sprites = objects.map(item => ({depth:item.depth, render:() => drawItem(item)}));
   sprites.push(
-    { depth: playerDepth, render: () => character(runner, player.x, player.y, 1.03, "#ff9dbb", elapsed * 17, lift, true) },
-    { depth: chaserDepth, render: () => character(chaser, pursuer.x, pursuer.y, .89, "#ffbb78", elapsed * 20, 0, false) }
+    {depth:playerDepth,render:() => character(runner,p.x,p.y,1.03,"#ff9dbb",elapsed*17,lift,true)},
+    {depth:1.02+(hearts-3)*.043,render:() => character(chaser,pursuer.x,pursuer.y,.89,"#ffbb78",elapsed*20,0,false)}
   );
-  sprites.sort((a, b) => a.depth - b.depth).forEach(sprite => sprite.render());
-
+  sprites.sort((a,b)=>a.depth-b.depth).forEach(sprite=>sprite.render());
   for (const pickup of pickups) {
-    const progress = pickup.age / .38;
-    pen.globalAlpha = 1 - progress * .8;
-    textAt("+" + pickup.letter, pickup.x, pickup.y - 60 * progress, 31, "#ffda89");
-    pen.globalAlpha = 1;
+    const progress = pickup.age/.38;
+    pen.globalAlpha=1-progress*.8;
+    textAt("+"+pickup.letter,pickup.x,pickup.y-60*progress,31,"#ffda89");
+    pen.globalAlpha=1;
   }
-
   if (mode === "countdown") {
-    circle(220, 301, 46, "#21142deb");
-    textAt(String(Math.ceil(countdown)), 220, 301, 57, "#ffda89");
+    circle(220,301,46,"#21142deb");
+    textAt(String(Math.ceil(countdown)),220,301,57,"#ffda89");
   }
 }
 
 function frame(now) {
-  const dt = lastFrame === null ? 0 : Math.min(.045, (now - lastFrame) / 1000);
+  const dt = lastFrame === null ? 0 : Math.min(.045,(now-lastFrame)/1000);
   lastFrame = now;
-
-  if (mode === "countdown" || mode === "running") {
-    position += (lane - position) * Math.min(1, dt * 20);
-  }
-
+  if (mode === "countdown" || mode === "running") position += (lane-position)*Math.min(1,dt*20);
   if (mode === "countdown") {
     const number = Math.ceil(countdown);
-    if (number !== countdownNumber) {
-      countdownNumber = number;
-      play([330]);
-    }
+    if (number !== countdownNumber) { countdownNumber = number; play([330]); }
     countdown -= dt;
-    if (countdown <= 0) {
-      mode = "running";
-      play([660, 880]);
-    }
+    if (countdown <= 0) { mode="running";syncMusic();play([660,880]); }
   }
-
   if (mode === "running") advance(dt);
   if (mode === "running" || mode === "countdown" || mode === "paused") draw();
   requestAnimationFrame(frame);
