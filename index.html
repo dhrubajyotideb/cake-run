@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#241637">
+  <title>Happy Birthday Bhutki! 🎂</title>
+  <style>
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 14px;
+      background: radial-gradient(ellipse at top, #533166, #21152e 70%);
+      color: #fff2dc;
+      font: 500 1rem/1.45 system-ui, sans-serif;
+    }
+
+    main { width: min(100%, 470px); }
+    h1, p { margin: 0; }
+    h1 {
+      font: 800 clamp(2.25rem, 9vw, 3.6rem)/.97 Georgia, serif;
+      letter-spacing: -.045em;
+    }
+
+    .stage {
+      position: relative;
+      isolation: isolate;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #342347;
+      box-shadow: 0 16px 70px #140b21a0;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: min(67svh, 620px);
+      touch-action: none;
+    }
+
+    .card {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(8px, 2svh, 18px);
+      padding: 14px;
+      text-align: center;
+      background: radial-gradient(ellipse at top, #744570, #2a1a3e 78%);
+    }
+
+    .portrait {
+      width: clamp(58px, 16svh, 125px);
+      aspect-ratio: 1;
+      object-fit: cover;
+      object-position: center 20%;
+      border: 4px solid #ffdc9d;
+      border-radius: 50%;
+      background: #b46085;
+      transform: rotate(-7deg);
+    }
+
+    .cake { font-size: clamp(32px, 8svh, 65px); line-height: 1; }
+    .card p { max-width: 30ch; }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: .65rem 1.15rem;
+      background: #ffda88;
+      color: #301c37;
+      font: 800 1rem/1.2 system-ui, sans-serif;
+      cursor: pointer;
+    }
+
+    button:focus-visible {
+      outline: 3px solid white;
+      outline-offset: 3px;
+    }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 46px;
+      gap: 8px;
+    }
+
+    #letters { letter-spacing: .22em; color: #ffda88; font-weight: 900; }
+    #message { text-align: center; min-height: 1.45em; margin: .45rem 0; }
+    .controls { display: flex; justify-content: center; gap: .55rem; }
+    .controls button { min-height: 44px; touch-action: manipulation; }
+    #confetti { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+
+    .confetti-piece {
+      position: absolute;
+      top: -5%;
+      width: 7px;
+      height: 12px;
+      animation: fall 2.3s ease-in forwards;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(72vh) rotate(620deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .confetti-piece { animation: none; top: 5%; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <div class="hud">
+    <strong>CAKE RUN</strong>
+    <span id="letters" aria-label="Letters collected">_ _ _ _</span>
+    <span id="lives" aria-label="Three lives">♥ ♥ ♥</span>
+  </div>
+
+  <div class="stage">
+    <canvas id="track" width="360" height="520" aria-label="Three-lane cake run"></canvas>
+    <div id="confetti" aria-hidden="true"></div>
+    <section class="card" id="card">
+      <img class="portrait" id="portrait" alt="Bhutki" hidden>
+      <div class="cake" id="cake" aria-hidden="true">🎂</div>
+      <h1 id="heading">Happy Birthday Bhutki!</h1>
+      <p id="caption">Make a wish, then cut the cake.</p>
+      <button id="action">Cut the cake</button>
+    </section>
+  </div>
+
+  <p id="message" role="status"></p>
+  <div class="controls" id="controls" hidden>
+    <button id="left" aria-label="Move left">←</button>
+    <button id="jump">↑ Jump</button>
+    <button id="right" aria-label="Move right">→</button>
+  </div>
+</main>
+
+<script>
+  const byId = id => document.getElementById(id);
+  const canvas = byId("track");
+  const ctx = canvas.getContext("2d");
+  const card = byId("card");
+  const action = byId("action");
+  const word = "CAKE";
+  const playerY = 350;
+  const laneX = [92, 180, 268];
+  const player = new Image();
+  const chaser = new Image();
+
+  function loadPhoto(image, filename, fallback) {
+    image.addEventListener("error", () => { image.src = fallback; }, { once: true });
+    image.src = filename;
+  }
+
+  player.addEventListener("load", () => {
+    byId("portrait").src = player.src;
+    byId("portrait").hidden = false;
+  });
+  loadPhoto(player, "bhutki.png", "image_2026-11-24_21-53-15.png");
+  loadPhoto(chaser, "chaser.png", "image(20261124-163053).png");
+
+  let mode = "intro";
+  let objects = [];
+  let lane = 1;
+  let position = laneX[lane];
+  let jumpTime = 0;
+  let health = 3;
+  let collected = 0;
+  let elapsed = 0;
+  let nextObstacle = 0;
+  let nextLetter = 0;
+  let lastFrame = 0;
+  let roadOffset = 0;
+  let noticeUntil = 0;
+
+  function updateHud() {
+    byId("letters").textContent = [...word].map((letter, index) =>
+      index < collected ? letter : "_"
+    ).join(" ");
+    byId("letters").ariaLabel = `${collected} of 4 letters collected`;
+    byId("lives").textContent = [...Array(3)].map((_, index) =>
+      index < health ? "♥" : "♡"
+    ).join(" ");
+    byId("lives").ariaLabel = `${health} lives left`;
+  }
+
+  function celebrate() {
+    const colors = ["#ffdf83", "#ffa6ce", "#9ef2d7", "#bbadff"];
+    const pieces = document.createDocumentFragment();
+    for (let index = 0; index < 36; index++) {
+      const piece = document.createElement("i");
+      piece.className = "confetti-piece";
+      piece.style.left = `${Math.random() * 100}%`;
+      piece.style.background = colors[index % colors.length];
+      piece.style.animationDelay = `${Math.random() * .7}s`;
+      pieces.append(piece);
+    }
+    byId("confetti").replaceChildren(pieces);
+  }
+
+  function showCard(state, icon, title, caption, label) {
+    mode = state;
+    byId("cake").textContent = icon;
+    byId("heading").textContent = title;
+    byId("caption").textContent = caption;
+    action.textContent = label;
+    byId("controls").hidden = true;
+    byId("message").textContent = "";
+    card.hidden = false;
+    action.focus({ preventScroll: true });
+  }
+
+  action.addEventListener("click", () => {
+    if (mode === "intro" || mode === "letter") {
+      collected = 0;
+      updateHud();
+      showCard("ready", "🍰", "Bhutki, run!",
+        "“BHUTKI, SAVE ME A SLICE!” Swipe sideways to dodge and swipe up to jump. Collect C A K E to get your cake back.",
+        "Start running");
+      return;
+    }
+
+    if (mode === "won") {
+      showCard("letter", "💌", "Happy Birthday Bhutki!",
+        "I hope this made you laugh. Have the best birthday, eat the biggest slice, and save me the corner piece. 🎂",
+        "Play again");
+      return;
+    }
+
+    startRun();
+  });
+
+  function startRun() {
+    mode = "running";
+    objects = [];
+    health = 3;
+    lane = 1;
+    position = laneX[lane];
+    jumpTime = elapsed = roadOffset = noticeUntil = 0;
+    nextObstacle = .7;
+    nextLetter = 2.6;
+    lastFrame = 0;
+    byId("confetti").replaceChildren();
+    card.hidden = true;
+    byId("controls").hidden = false;
+    byId("message").textContent = "Swipe or use the arrow keys.";
+    updateHud();
+    requestAnimationFrame(frame);
+  }
+
+  function move(change) {
+    if (mode === "running") lane = Math.max(0, Math.min(2, lane + change));
+  }
+
+  function jump() {
+    if (mode === "running" && jumpTime === 0) jumpTime = .78;
+  }
+
+  byId("left").onclick = () => move(-1);
+  byId("right").onclick = () => move(1);
+  byId("jump").onclick = jump;
+
+  window.addEventListener("keydown", event => {
+    if (mode !== "running") return;
+    const commands = {
+      ArrowLeft: () => move(-1),
+      ArrowRight: () => move(1),
+      ArrowUp: jump,
+      " ": jump
+    };
+    const command = commands[event.key];
+    if (command) {
+      event.preventDefault();
+      if (!event.repeat) command();
+    }
+  });
+
+  let swipeStart = null;
+  canvas.addEventListener("pointerdown", event => {
+    swipeStart = { x: event.clientX, y: event.clientY };
+    canvas.setPointerCapture(event.pointerId);
+  });
+  canvas.addEventListener("pointercancel", () => { swipeStart = null; });
+  canvas.addEventListener("pointerup", event => {
+    if (!swipeStart) return;
+    const dx = event.clientX - swipeStart.x;
+    const dy = event.clientY - swipeStart.y;
+    swipeStart = null;
+
+    if (dy < -22 && -dy > Math.abs(dx)) jump();
+    else if (Math.abs(dx) > 22) move(Math.sign(dx));
+  });
+
+  function advance(dt) {
+    elapsed += dt;
+    jumpTime = Math.max(0, jumpTime - dt);
+    position += (laneX[lane] - position) * Math.min(1, dt * 16);
+    const speed = 145 + collected * 11;
+    roadOffset = (roadOffset + speed * dt) % 58;
+
+    if (elapsed > nextObstacle) {
+      objects.push({ lane: Math.floor(Math.random() * 3), y: -35, letter: false });
+      nextObstacle = elapsed + .94;
+    }
+
+    if (elapsed > nextLetter && !objects.some(object => object.letter)) {
+      const letterLane = Math.floor(Math.random() * 3);
+      const high = collected % 2 === 1;
+      objects.push({ lane: letterLane, y: -34, letter: true, high });
+      if (high) objects.push({ lane: letterLane, y: -34, letter: false });
+      nextLetter = elapsed + 4.4;
+    }
+
+    const airborne = jumpTime > .13 && jumpTime < .68;
+    for (const object of objects) {
+      object.y += speed * dt;
+      const inLane = Math.abs(laneX[object.lane] - position) < 36;
+      if (object.resolved || !inLane || Math.abs(object.y - playerY) > 23) continue;
+
+      if (object.letter && (!object.high || airborne)) {
+        object.resolved = true;
+        collected++;
+        updateHud();
+        if (collected === word.length) {
+          showCard("won", "🎂", "Happy Birthday Bhutki!",
+            "You got the cake back! “All that running and you still didn’t save me a slice?”",
+            "Open your birthday message");
+          celebrate();
+          return;
+        }
+      } else if (!object.letter && !airborne) {
+        object.resolved = true;
+        if (elapsed < noticeUntil) continue;
+        health--;
+        noticeUntil = elapsed + .85;
+        byId("message").textContent = "Squelch! “I CAN SMELL YOU FROM HERE!”";
+        updateHud();
+        if (health === 0) {
+          showCard("caught", "💩", "Caught!",
+            `You saved ${collected} of 4 letters. Keep them and try the chase again.`,
+            "Try again");
+          return;
+        }
+      }
+    }
+
+    objects = objects.filter(object => !object.resolved && object.y < 570);
+    if (noticeUntil && elapsed > noticeUntil) {
+      byId("message").textContent = "Jump for the raised letters.";
+      noticeUntil = 0;
+    }
+  }
+
+  function drawCharacter(photo, x, feet, scale, shirt, phase) {
+    const stride = Math.sin(phase) * 12;
+    ctx.save();
+    ctx.translate(x, feet);
+    ctx.scale(scale, scale);
+    ctx.lineCap = "round";
+    ctx.lineWidth = 7;
+    ctx.strokeStyle = "#20142e";
+    ctx.beginPath();
+    ctx.moveTo(-7, -28);
+    ctx.lineTo(-8 + stride, -3);
+    ctx.moveTo(7, -28);
+    ctx.lineTo(8 - stride, -3);
+    ctx.stroke();
+
+    ctx.strokeStyle = shirt;
+    ctx.beginPath();
+    ctx.moveTo(-9, -43);
+    ctx.lineTo(-18 - stride * .35, -25);
+    ctx.moveTo(9, -43);
+    ctx.lineTo(18 + stride * .35, -25);
+    ctx.stroke();
+    ctx.fillStyle = shirt;
+    ctx.beginPath();
+    ctx.ellipse(0, -37, 14, 17, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(0, -64, 24, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.fillStyle = "#ffc98a";
+    ctx.fillRect(-24, -88, 48, 48);
+    if (photo.complete && photo.naturalWidth) {
+      const size = Math.min(photo.naturalWidth, photo.naturalHeight) * .75;
+      ctx.drawImage(photo, (photo.naturalWidth - size) / 2,
+        (photo.naturalHeight - size) * .25, size, size, -24, -88, 48, 48);
+    }
+    ctx.restore();
+
+    ctx.strokeStyle = "#fff1d5";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, -64, 24, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function draw() {
+    ctx.fillStyle = "#422d54";
+    ctx.fillRect(0, 0, 360, 520);
+    ctx.fillStyle = "#aa6382";
+    ctx.fillRect(39, 0, 282, 520);
+    ctx.fillStyle = "#614360";
+    ctx.fillRect(48, 0, 264, 520);
+
+    ctx.strokeStyle = "#f2b3ba";
+    ctx.lineWidth = 2;
+    for (const edge of [136, 224]) {
+      for (let y = roadOffset - 58; y < 520; y += 58) {
+        ctx.beginPath();
+        ctx.moveTo(edge, y);
+        ctx.lineTo(edge, y + 25);
+        ctx.stroke();
+      }
+    }
+
+    ctx.textAlign = "center";
+    for (const object of objects) {
+      const x = laneX[object.lane];
+      if (object.letter) {
+        const y = object.y - (object.high ? 48 : 17);
+        ctx.beginPath();
+        ctx.arc(x, y, 17, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffdb80";
+        ctx.fill();
+        ctx.fillStyle = "#382841";
+        ctx.font = "900 21px system-ui";
+        ctx.fillText(word[collected], x, y + 7);
+      } else {
+        ctx.font = "29px system-ui";
+        ctx.fillText("💩", x, object.y + 8);
+      }
+    }
+
+    const lift = Math.sin(Math.PI * jumpTime / .78) * 71;
+    drawCharacter(player, position, playerY + 12 - lift, 1, "#ff9ecb", elapsed * 16);
+    drawCharacter(chaser, 180 + (position - 180) * .6 + 18,
+      499 - (3 - health) * 27, .86, "#ffba76", elapsed * 18);
+  }
+
+  function frame(now) {
+    if (mode !== "running") return;
+    const dt = lastFrame ? Math.min(.04, (now - lastFrame) / 1000) : 0;
+    lastFrame = now;
+    advance(dt);
+    draw();
+    if (mode === "running") requestAnimationFrame(frame);
+  }
+</script>
+</body>
+</html>
